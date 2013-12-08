@@ -28,6 +28,9 @@
 # - saving and loading optimal tyre temperature per car in C:/Users/[YourUserName]/AC_tyre_temp/ (flitzi)
 # - added variable for showing/hiding optimal temperature spinner (flitzi)
 #
+# 1.2.2
+# - only write optimal tyre temperature when changed (flitzi)
+#
 ################################################################################
 
 import string
@@ -246,11 +249,13 @@ def acMain(ac_version):
   
   TYREINFO.optimal_temp = d_optimal_temp
   TYREINFO.carinifilepath = inidir + getValidFileName(ac.getCarName(0)) + ".ini"
+  TYREINFO.needwriteini = 1
   
   if os.path.exists(TYREINFO.carinifilepath):
     f = open(TYREINFO.carinifilepath, "r")
     TYREINFO.optimal_temp = int(f.readline()[8:])
     f.close()
+    TYREINFO.needwriteini = 0
   
   if show_optimal_spinner == 1:
     optimal_spinner_id = ac.addSpinner(appWindow, "optimal")
@@ -267,14 +272,16 @@ def acShutdown():
   global TYREINFO
   if not os.path.exists(inidir):
     os.makedirs(inidir)
-  f = open(TYREINFO.carinifilepath, "w")
-  f.write("optimal={0}".format(TYREINFO.optimal_temp))
-  f.close()
+  if TYREINFO.needwriteini == 1:
+    f = open(TYREINFO.carinifilepath, "w")
+    f.write("optimal={0}".format(TYREINFO.optimal_temp))
+    f.close()
 
 def onValueChanged(value):
-  global TYREINFO  
-  TYREINFO.optimal_temp = value  
-  
+  global TYREINFO
+  TYREINFO.optimal_temp = value
+  TYREINFO.needwriteini = 1
+
 def onFormRender(deltaT):
   global TYREINFO
   tFL, tFR, tRL, tRR = ac.getCarState(0, acsys.CS.CurrentTyresCoreTemp)
