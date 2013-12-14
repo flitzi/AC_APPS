@@ -38,6 +38,8 @@ import math
 import ac
 import acsys
 import os.path
+import struct                          # for converting from bytes to useful data
+import mmap                            # for reading shared memory
 
 ###directory for storing ini files, home("~") is C:/Users/[YourUserName]
 from os.path import expanduser
@@ -45,7 +47,6 @@ inidir = expanduser("~") + "/AC_tyre_temp/"
 
 ###valid file name characters
 validFilenameChars = "-_() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
 
 TYREINFO = 0
 ###appsize
@@ -213,7 +214,13 @@ class Tyre_Info:
     ac.setText(self.dFLValue, "{0}%".format(round(dFL*20)))
     ac.setText(self.dFRValue, "{0}%".format(round(dFR*20)))
     ac.setText(self.dRLValue, "{0}%".format(round(dRL*20)))
-    ac.setText(self.dRRValue, "{0}%".format(round(dRR*20)))  
+    ac.setText(self.dRRValue, "{0}%".format(round(dRR*20)))
+  
+  def setWear(self, wFL, wFR, wRL, wRR):
+    ac.setText(self.dFLValue, "{0}%".format(round(wFL)))
+    ac.setText(self.dFRValue, "{0}%".format(round(wFR)))
+    ac.setText(self.dRLValue, "{0}%".format(round(wRL)))
+    ac.setText(self.dRRValue, "{0}%".format(round(wRR)))
   
   def setMaxT(self, tFL, tFR, tRL, tRR):
     if self.maxtFL < tFL:
@@ -290,12 +297,22 @@ def onValueChanged(value):
 
 def onFormRender(deltaT):
   global TYREINFO
+  shmHandle = mmap.mmap(0, 256, "acpmf_physics")
+  shmHandle.seek(30*4)
+  data = shmHandle.read(4*4)
+  shmHandle.close()
+  wear = struct.unpack("<ffff", data)
   tFL, tFR, tRL, tRR = ac.getCarState(0, acsys.CS.CurrentTyresCoreTemp)
   pFL, pFR, pRL, pRR = ac.getCarState(0, acsys.CS.DynamicPressure)
   dFL, dFR, dRL, dRR = ac.getCarState(0, acsys.CS.TyreDirtyLevel)
+  wFL = wear[0]
+  wFR = wear[1]
+  wRL = wear[2]
+  wRR = wear[3]
   TYREINFO.setTemp(tFL, tFR, tRL, tRR)
   TYREINFO.setPressure(pFL, pFR, pRL, pRR)
-  TYREINFO.setDirt(dFL, dFR, dRL, dRR)
+  #TYREINFO.setDirt(dFL, dFR, dRL, dRR)
+  TYREINFO.setWear(wFL, wFR, wRL, wRR)
   TYREINFO.setMaxT(tFL, tFR, tRL, tRR)
   TYREINFO.setMaxP(pFL, pFR, pRL, pRR)
   drawTyresAll(w_tyre, h_tyre, round(tFL, 4), round(tFR, 4), round(tRL, 4), round(tRR, 4), dFL, dFR, dRL, dFR)
