@@ -296,19 +296,11 @@ def onValueChanged(value):
   TYREINFO.needwriteini = 1
 
 def onFormRender(deltaT):
-  global TYREINFO
-  shmHandle = mmap.mmap(0, 256, "acpmf_physics")
-  shmHandle.seek(30*4)
-  data = shmHandle.read(4*4)
-  shmHandle.close()
-  wear = struct.unpack("<ffff", data)
+  global TYREINFO 
   tFL, tFR, tRL, tRR = ac.getCarState(0, acsys.CS.CurrentTyresCoreTemp)
   pFL, pFR, pRL, pRR = ac.getCarState(0, acsys.CS.DynamicPressure)
   dFL, dFR, dRL, dRR = ac.getCarState(0, acsys.CS.TyreDirtyLevel)
-  wFL = wear[0]
-  wFR = wear[1]
-  wRL = wear[2]
-  wRR = wear[3]
+  wFL, wFR, wRL, wRR = readTyreWear()  
   TYREINFO.setTemp(tFL, tFR, tRL, tRR)
   TYREINFO.setPressure(pFL, pFR, pRL, pRR)
   #TYREINFO.setDirt(dFL, dFR, dRL, dRR)
@@ -316,6 +308,13 @@ def onFormRender(deltaT):
   TYREINFO.setMaxT(tFL, tFR, tRL, tRR)
   TYREINFO.setMaxP(pFL, pFR, pRL, pRR)
   drawTyresAll(w_tyre, h_tyre, round(tFL, 4), round(tFR, 4), round(tRL, 4), round(tRR, 4), dFL, dFR, dRL, dFR)
+
+def readTyreWear():
+  shmHandle = mmap.mmap(0, 256, "acpmf_physics")
+  shmHandle.seek(30*4)
+  data = shmHandle.read(4*4)
+  shmHandle.close()  
+  return struct.unpack("<ffff", data)
 
 def drawTyresAll(w, h, tFL, tFR, tRL, tRR, dFL, dFR, dRL, dRR):
   drawTyres(x_tyre_position, y_tyre_position, w, h, tFL)
