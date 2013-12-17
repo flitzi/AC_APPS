@@ -4,7 +4,7 @@
 # 
 # Shows from left to right  -the fuel left in tank  -average fuel per lap  -laps left until tank is empty 
 # The out lap is skipped, so you need to drive 2 laps before calculation starts.
-# The average fuel usage per lap is stored in C:/Users/[YourUserName]/[CarName]_[TrackName].ini
+# The average fuel usage per lap is stored in C:/Users/[YourUserName]/AC_fuel_usage/[CarName]_[TrackName].ini
 # The stored value (if existing) is used for the first two laps until the new calculation is started
 #
 # Changelog:
