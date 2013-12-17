@@ -30,6 +30,9 @@
 #
 # 1.2.2
 # - only write optimal tyre temperature when changed (flitzi)
+# 
+# 1.2.3
+# - displaying tyre wear % instead of tyre dirt %, tyre dirt bar remains in place (flitzi)
 #
 ################################################################################
 
