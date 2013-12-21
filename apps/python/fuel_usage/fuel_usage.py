@@ -16,6 +16,9 @@
 # - added average fuel consumption in liters per 100 km and inst. fuel consumption (also in liters per 100 km)
 # - fixed bug in average per lap calculation when removing fuel in pits (leaving pits with less fuel than at pit entry)
 #
+# 1.2
+# - fixed bug for game modes not starting in pit (hotlap, time attack)
+#
 ################################################################################
 
 import string
