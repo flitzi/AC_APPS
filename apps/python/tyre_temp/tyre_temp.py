@@ -34,6 +34,9 @@
 # 1.2.3
 # - displaying tyre wear % instead of tyre dirt %, tyre dirt bar remains in place (flitzi)
 #
+# 1.2.4
+# - only showing optimal temperature spinner when in pit, it gets automatically hidden when leaving the pits (flitzi)
+#
 ################################################################################
 
 import string
@@ -85,9 +88,6 @@ background = 0
 ###the optimal temperature can be adjusted using the spinner
 d_optimal_temp = 100 
 temp_range = 80 
-
-###whether optimal temperature spinner is shown, 0=not shown, 1=shown
-show_optimal_spinner = 1
 
 class Tyre_Info:  
 
@@ -254,7 +254,7 @@ class Tyre_Info:
       ac.setText(self.maxpRRValue, "{0}".format(round(self.maxpRR)))
 
 def acMain(ac_version):
-  global TYREINFO
+  global TYREINFO, optimal_spinner_id, optimal_spinner_shown
   appWindow = ac.newApp("Tyre Temperatures")
   ac.drawBackground(appWindow, background)  
   ac.drawBorder(appWindow, background)
@@ -273,13 +273,13 @@ def acMain(ac_version):
     f.close()
     TYREINFO.needwriteini = 0
   
-  if show_optimal_spinner == 1:
-    optimal_spinner_id = ac.addSpinner(appWindow, "optimal")
-    ac.setPosition(optimal_spinner_id, x_start, y_start + 200) 
-    ac.setRange(optimal_spinner_id, 50, 150)
-    ac.setStep(optimal_spinner_id, 1)
-    ac.setValue(optimal_spinner_id, TYREINFO.optimal_temp)    
-    ac.addOnValueChangeListener(optimal_spinner_id, onValueChanged)
+  optimal_spinner_id = ac.addSpinner(appWindow, "optimal")
+  ac.setPosition(optimal_spinner_id, 0, y_app_size + 28) 
+  ac.setRange(optimal_spinner_id, 50, 150)
+  ac.setStep(optimal_spinner_id, 1)
+  ac.setValue(optimal_spinner_id, TYREINFO.optimal_temp)    
+  ac.addOnValueChangeListener(optimal_spinner_id, onValueChanged)
+  optimal_spinner_shown = 1
   
   ac.log("Danny Giusa Tyre Temperatures loaded")
   return "Danny Giusa Tyre Temperatures"
@@ -299,7 +299,7 @@ def onValueChanged(value):
   TYREINFO.needwriteini = 1
 
 def onFormRender(deltaT):
-  global TYREINFO 
+  global TYREINFO, optimal_spinner_id, optimal_spinner_shown
   tFL, tFR, tRL, tRR = ac.getCarState(0, acsys.CS.CurrentTyresCoreTemp)
   pFL, pFR, pRL, pRR = ac.getCarState(0, acsys.CS.DynamicPressure)
   dFL, dFR, dRL, dRR = ac.getCarState(0, acsys.CS.TyreDirtyLevel)
@@ -311,6 +311,13 @@ def onFormRender(deltaT):
   TYREINFO.setMaxT(tFL, tFR, tRL, tRR)
   TYREINFO.setMaxP(pFL, pFR, pRL, pRR)
   drawTyresAll(w_tyre, h_tyre, round(tFL, 4), round(tFR, 4), round(tRL, 4), round(tRR, 4), dFL, dFR, dRL, dFR)
+  isInPit = readIsInPit()
+  if isInPit == 1 and optimal_spinner_shown == 0:
+    ac.setVisible(optimal_spinner_id, 1)
+    optimal_spinner_shown = 1
+  elif isInPit == 0 and optimal_spinner_shown == 1:
+    ac.setVisible(optimal_spinner_id, 0)
+    optimal_spinner_shown = 0
 
 def readTyreWear():
   shmHandle = mmap.mmap(0, 256, "acpmf_physics")
@@ -318,6 +325,13 @@ def readTyreWear():
   data = shmHandle.read(4*4)
   shmHandle.close()  
   return struct.unpack("<ffff", data)
+
+def readIsInPit():
+  shmHandle = mmap.mmap(0, 148, "acpmf_graphics")
+  shmHandle.seek(80)
+  isInPit = struct.unpack("<L", shmHandle.read(4))[0]
+  shmHandle.close()  
+  return isInPit
 
 def drawTyresAll(w, h, tFL, tFR, tRL, tRR, dFL, dFR, dRL, dRR):
   drawTyres(x_tyre_position, y_tyre_position, w, h, tFL)
