@@ -52,6 +52,7 @@ class Fuel_Usage:
     self.completedLaps = 0
     self.fuelAtLapStart = 0
     self.distanceTraveledAtStart = 0
+    self.fuelAtStart = -1
     self.lastFuelMeasurement = 0
     self.lastDistanceTraveled = 0
     self.counter = 0
@@ -108,7 +109,7 @@ class Fuel_Usage:
     remaining = self.readFuel() #read remaining fuel from shared memory
     completedLaps, distanceTraveled, isInPit = self.readInfo() #read completedLaps, distanceTraveled, isInPit from shared memory
     
-    if isInPit == 1: #if in pit
+    if isInPit == 1 or self.fuelAtStart == -1: #if in pit or first tick
       self.fuelAtLapStart = 0 #set fuelAtLapStart to 0 so the coming lap will not be counted
       self.fuelAtStart = remaining
       self.distanceTraveledAtStart = distanceTraveled
