@@ -290,8 +290,8 @@ def acMain(ac_version):
   ac.setPosition(optimal_spinner_id, 0, y_app_size + 28)
   ac.setStep(optimal_spinner_id, 1)
   if inFahrenheit:
-    ac.setRange(optimal_spinner_id, CelsiusToFahrenheit(50), CelsiusToFahrenheit(150))
-    ac.setValue(optimal_spinner_id, CelsiusToFahrenheit(TYREINFO.optimal_temp))
+    ac.setRange(optimal_spinner_id, int(CelsiusToFahrenheit(50)), int(CelsiusToFahrenheit(150)))
+    ac.setValue(optimal_spinner_id, int(CelsiusToFahrenheit(TYREINFO.optimal_temp)))
   else:
     ac.setRange(optimal_spinner_id, 50, 150)
     ac.setValue(optimal_spinner_id, TYREINFO.optimal_temp)
