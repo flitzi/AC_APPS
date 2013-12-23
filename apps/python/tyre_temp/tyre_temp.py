@@ -37,6 +37,9 @@
 # 1.2.4
 # - only showing optimal temperature spinner when in pit, it gets automatically hidden when leaving the pits (flitzi)
 #
+# 1.2.5
+# - inFahrenheit variable for changing temperature unit (ini file always stores the value in Celsius, only the GUI is changed to Fahrenheit) (flitzi)
+#
 ################################################################################
 
 import string
@@ -77,9 +80,14 @@ h_tyre = 50
 w_tyredirt = w_tyre -6
 
 
-################## CHANGE BACKROUND HERE ################## 
+################## CHANGE BACKROUND HERE ##################
 background = 0
 ################## CHANGE BACKROUND HERE ##################
+
+################## CHANGE TEMPERATURE UNIT HERE ##################
+# False for Celsius , True for Fahrenheit
+inFahrenheit = False
+################## CHANGE TEMPERATURE UNIT HERE ##################
 
 ###d_optimal_temp is displayed as green
 ###d_optimal_temp - temp_rage / 2 is displayed as blue
@@ -112,6 +120,11 @@ class Tyre_Info:
     self.maxpRL = 0
     self.maxpRR = 0
     
+    self.unitChar = "C"
+    
+    if inFahrenheit:
+      self.unitChar = "F"
+    
     ##initialize labels
     
     self.tFLValue = ac.addLabel(app, "temp fl")
@@ -127,9 +140,9 @@ class Tyre_Info:
     self.dRLValue = ac.addLabel(app, "dirt rl")
     self.dRRValue = ac.addLabel(app, "dirt rr")
     self.maxFont = ac.addLabel(app, "Max")
-    self.maxtFont = ac.addLabel(app, "C")
+    self.maxtFont = ac.addLabel(app, self.unitChar)
     self.maxpFont = ac.addLabel(app, "psi")
-    self.maxtFontBottom = ac.addLabel(app, "C")
+    self.maxtFontBottom = ac.addLabel(app, self.unitChar)
     self.maxpFontBottom = ac.addLabel(app, "psi")
     self.maxtFLValue = ac.addLabel(app, "maxtemp fl")
     self.maxtFRValue = ac.addLabel(app, "maxtemp fr")
@@ -202,10 +215,10 @@ class Tyre_Info:
     ac.setFontSize(self.maxpRRValue, 12)
     
   def setTemp(self, tFL, tFR, tRL, tRR):
-    ac.setText(self.tFLValue, "{0} C".format(round(tFL)))
-    ac.setText(self.tFRValue, "{0} C".format(round(tFR)))
-    ac.setText(self.tRLValue, "{0} C".format(round(tRL)))
-    ac.setText(self.tRRValue, "{0} C".format(round(tRR)))
+    ac.setText(self.tFLValue, "{0} {1}".format(round(tFL), self.unitChar))
+    ac.setText(self.tFRValue, "{0} {1}".format(round(tFR), self.unitChar))
+    ac.setText(self.tRLValue, "{0} {1}".format(round(tRL), self.unitChar))
+    ac.setText(self.tRRValue, "{0} {1}".format(round(tRR), self.unitChar))
   
   def setPressure(self, pFL, pFR, pRL, pRR):
     ac.setText(self.pFLValue, "{0} psi".format(round(pFL)))
@@ -274,10 +287,14 @@ def acMain(ac_version):
     TYREINFO.needwriteini = 0
   
   optimal_spinner_id = ac.addSpinner(appWindow, "optimal")
-  ac.setPosition(optimal_spinner_id, 0, y_app_size + 28) 
-  ac.setRange(optimal_spinner_id, 50, 150)
+  ac.setPosition(optimal_spinner_id, 0, y_app_size + 28)
   ac.setStep(optimal_spinner_id, 1)
-  ac.setValue(optimal_spinner_id, TYREINFO.optimal_temp)    
+  if inFahrenheit:
+    ac.setRange(optimal_spinner_id, CelsiusToFahrenheit(50), CelsiusToFahrenheit(150))
+    ac.setValue(optimal_spinner_id, CelsiusToFahrenheit(TYREINFO.optimal_temp))
+  else:
+    ac.setRange(optimal_spinner_id, 50, 150)
+    ac.setValue(optimal_spinner_id, TYREINFO.optimal_temp)
   ac.addOnValueChangeListener(optimal_spinner_id, onValueChanged)
   optimal_spinner_shown = 1
   
@@ -295,7 +312,10 @@ def acShutdown():
 
 def onValueChanged(value):
   global TYREINFO
-  TYREINFO.optimal_temp = value
+  if inFahrenheit:
+    TYREINFO.optimal_temp = FahrenheitToCelsius(value)
+  else:
+    TYREINFO.optimal_temp = value
   TYREINFO.needwriteini = 1
 
 def onFormRender(deltaT):
@@ -303,14 +323,20 @@ def onFormRender(deltaT):
   tFL, tFR, tRL, tRR = ac.getCarState(0, acsys.CS.CurrentTyresCoreTemp)
   pFL, pFR, pRL, pRR = ac.getCarState(0, acsys.CS.DynamicPressure)
   dFL, dFR, dRL, dRR = ac.getCarState(0, acsys.CS.TyreDirtyLevel)
-  wFL, wFR, wRL, wRR = readTyreWear()  
+  wFL, wFR, wRL, wRR = readTyreWear()
+  drawTyresAll(w_tyre, h_tyre, round(tFL, 4), round(tFR, 4), round(tRL, 4), round(tRR, 4), dFL, dFR, dRL, dFR)
+  if inFahrenheit:
+    tFL = CelsiusToFahrenheit(tFL)
+    tFR = CelsiusToFahrenheit(tFR)
+    tRL = CelsiusToFahrenheit(tRL)
+    tRR = CelsiusToFahrenheit(tRR)
   TYREINFO.setTemp(tFL, tFR, tRL, tRR)
   TYREINFO.setPressure(pFL, pFR, pRL, pRR)
   #TYREINFO.setDirt(dFL, dFR, dRL, dRR)
   TYREINFO.setWear(wFL, wFR, wRL, wRR)
   TYREINFO.setMaxT(tFL, tFR, tRL, tRR)
   TYREINFO.setMaxP(pFL, pFR, pRL, pRR)
-  drawTyresAll(w_tyre, h_tyre, round(tFL, 4), round(tFR, 4), round(tRL, 4), round(tRR, 4), dFL, dFR, dRL, dFR)
+  
   isInPit = readIsInPit()
   if isInPit == 1 and optimal_spinner_shown == 0:
     ac.setVisible(optimal_spinner_id, 1)
@@ -378,6 +404,12 @@ def hsv2rgb(h, s, v):
   elif hi == 4: r, g, b = t, p, v
   elif hi == 5: r, g, b = v, p, q  
   return r, g, b
-  
+
+def CelsiusToFahrenheit(c):
+  return c * 9 / 5 + 32
+
+def FahrenheitToCelsius(f):
+  return (f - 32) * 5 / 9
+
 def getValidFileName(filename):
   return "".join(c for c in filename if c in validFilenameChars)
