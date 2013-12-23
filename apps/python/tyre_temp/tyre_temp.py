@@ -313,7 +313,7 @@ def acShutdown():
 def onValueChanged(value):
   global TYREINFO
   if inFahrenheit:
-    TYREINFO.optimal_temp = FahrenheitToCelsius(value)
+    TYREINFO.optimal_temp = (int)FahrenheitToCelsius(value)
   else:
     TYREINFO.optimal_temp = value
   TYREINFO.needwriteini = 1
