@@ -23,6 +23,9 @@
 # - added miles per gallon calculation (change constant milesPerGallon to True)
 # - fixed liters per 100km calculation after restart and not starting in pit (distance travelled not resetted in AC?)
 #
+# 1.5
+# - when crossing the line, fuel consumption of last lap and remaining laps based on this value are shown for a couple of seconds (blinking)
+#
 ################################################################################
 
 import string
@@ -60,6 +63,7 @@ class Fuel_Usage:
   def __init__(self, app, x, y):
     
     self.AverageFuelPerLap = 0.0
+    self.FuelLastLap = 0.0
     self.completedLaps = 0.0
     self.fuelAtLapStart = 0.0
     self.distanceTraveledAtStart = 0.0
@@ -67,6 +71,7 @@ class Fuel_Usage:
     self.lastFuelMeasurement = 0.0
     self.lastDistanceTraveled = 0.0
     self.counter = 0
+    self.updatecounter = 0
     
     self.inifilepath = inidir + self.getValidFileName(ac.getCarName(0)) +"_" + self.getValidFileName(ac.getTrackName(0)) + ".ini"
     
@@ -136,15 +141,26 @@ class Fuel_Usage:
     
     if completedLaps != self.completedLaps: #when crossed finish line
       if completedLaps >= 2 and self.fuelAtLapStart > remaining: #if more than 2 laps driven
-        self.AverageFuelPerLap = (self.AverageFuelPerLap * (completedLaps - 2) + self.fuelAtLapStart - remaining) / (completedLaps - 1) #calculate AverageFuelPerLap
+        self.FuelLastLap = self.fuelAtLapStart - remaining # calculate fuel used last lap
+        self.AverageFuelPerLap = (self.AverageFuelPerLap * (completedLaps - 2) + self.FuelLastLap) / (completedLaps - 1) #calculate AverageFuelPerLap
       self.fuelAtLapStart = remaining #reset fuelAtLapStart
       self.completedLaps = completedLaps #set completedLaps
+      self.counter = 999
+      self.updatecounter = 0
     
-    if self.counter == 30: #if enough ticks for update
-      ac.setText(self.remainingLabel, "{0} l".format(round(remaining, 1))) #set remaing fuel text
+    if self.counter > 30: #if enough ticks for update
+      ac.setText(self.remainingLabel, "{0} l".format(round(remaining, 1))) #set remaining fuel text
       if self.AverageFuelPerLap > 0:
-        ac.setText(self.averageFuelPerLapLabel, "{0} l/lap".format(round(self.AverageFuelPerLap, 2))) #set averageFuelPerLap text
-        ac.setText(self.lapsLeftLabel, "{0} laps".format(round(remaining / self.AverageFuelPerLap, 1))) #set lapsLeft text
+        if self.updatecounter > 20 or self.FuelLastLap == 0:
+          ac.setText(self.averageFuelPerLapLabel, "{0} l/lap".format(round(self.AverageFuelPerLap, 2))) #set averageFuelPerLap text
+          ac.setText(self.lapsLeftLabel, "{0} laps".format(round(remaining / self.AverageFuelPerLap, 1))) #set lapsLeft text
+        else:
+          if self.updatecounter % 2 == 1:
+            ac.setText(self.averageFuelPerLapLabel, "{0} last".format(round(self.FuelLastLap, 2))) #set fuel last lap text
+            ac.setText(self.lapsLeftLabel, "{0} laps".format(round(remaining / self.FuelLastLap, 1))) #set lapsLeft with last lap consumption text
+          else:
+            ac.setText(self.averageFuelPerLapLabel, " ") #make text blinking
+            ac.setText(self.lapsLeftLabel, " ") #make text blinking
       
       distance = distanceTraveled - self.lastDistanceTraveled #distance since last calculation update
       if distance > 0.01:
@@ -163,17 +179,18 @@ class Fuel_Usage:
       if distance > 0.01:
         lp100km = (self.fuelAtStart - remaining) / distance * 100000
         if milesPerGallon:
-          ac.setText(self.averageFuelPer100kmLabel, "{0} mgp".format(round(self.lPer100kmToMPG(lp100km), 1))) #set avergae fuel consumption text in mpg
+          ac.setText(self.averageFuelPer100kmLabel, "{0} mgp".format(round(self.lPer100kmToMPG(lp100km), 1))) #set average fuel consumption text in mpg
         else:
-          ac.setText(self.averageFuelPer100kmLabel, "{0} l/100km".format(round(lp100km, 1))) #set avergae fuel consumption text
+          ac.setText(self.averageFuelPer100kmLabel, "{0} l/100km".format(round(lp100km, 1))) #set average fuel consumption text
       else:
         if milesPerGallon: 
-          ac.setText(self.averageFuelPer100kmLabel, "0 mpg") #set avergae fuel consumption text if not moving in mpg
+          ac.setText(self.averageFuelPer100kmLabel, "0 mpg") #set average fuel consumption text if not moving in mpg
         else:
-          ac.setText(self.averageFuelPer100kmLabel, "999 l/100km") #set avergae fuel consumption text if not moving
+          ac.setText(self.averageFuelPer100kmLabel, "999 l/100km") #set average fuel consumption text if not moving
       
       self.lastFuelMeasurement = remaining #reset lastFuelMeasurement
       self.lastDistanceTraveled = distanceTraveled #reset lastDistanceTraveled
+      self.updatecounter = self.updatecounter + 1 #increment update counter
       self.counter = 0 #reset counter
     
     self.counter = self.counter + 1 #increment counter
