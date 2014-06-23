@@ -40,6 +40,9 @@
 # 1.2.5
 # - inFahrenheit variable for changing temperature unit (ini file always stores the value in Celsius, only the GUI is changed to Fahrenheit) (flitzi)
 #
+# 1.2.6
+# - updated to AC 0.20 shared memory struct
+#
 ################################################################################
 
 import string
@@ -353,8 +356,8 @@ def readTyreWear():
   return struct.unpack("<ffff", data)
 
 def readIsInPit():
-  shmHandle = mmap.mmap(0, 148, "acpmf_graphics")
-  shmHandle.seek(80)
+  shmHandle = mmap.mmap(0, 169, "acpmf_graphics")
+  shmHandle.seek(100)
   isInPit = struct.unpack("<L", shmHandle.read(4))[0]
   shmHandle.close()  
   return isInPit

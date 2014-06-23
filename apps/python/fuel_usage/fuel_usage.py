@@ -26,6 +26,9 @@
 # 1.5
 # - when crossing the line, fuel consumption of last lap and remaining laps based on this value are shown for a couple of seconds (blinking)
 #
+# 1.6
+# - updated to AC 0.20 shared memory struct
+#
 ################################################################################
 
 import string
@@ -203,10 +206,10 @@ class Fuel_Usage:
     return struct.unpack("<f", data)[0]
   
   def readInfo(self):
-    shmHandle = mmap.mmap(0, 148, "acpmf_graphics")
-    shmHandle.seek(52)    
+    shmHandle = mmap.mmap(0, 169, "acpmf_graphics")
+    shmHandle.seek(72)    
     completedLaps = struct.unpack("<L", shmHandle.read(4))[0]
-    shmHandle.seek(76)    
+    shmHandle.seek(96)    
     distanceTraveled = struct.unpack("<f", shmHandle.read(4))[0]
     isInPit = struct.unpack("<L", shmHandle.read(4))[0]
     shmHandle.close()  
