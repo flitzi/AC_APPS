@@ -29,6 +29,9 @@
 # 1.6
 # - updated to AC 0.20 shared memory struct
 #
+# 1.7
+# - updated to AC 0.22 shared memory struct
+#
 ################################################################################
 
 import string
@@ -206,10 +209,10 @@ class Fuel_Usage:
     return struct.unpack("<f", data)[0]
   
   def readInfo(self):
-    shmHandle = mmap.mmap(0, 169, "acpmf_graphics")
-    shmHandle.seek(72)    
+    shmHandle = mmap.mmap(0, 262, "acpmf_graphics")
+    shmHandle.seek(132)    
     completedLaps = struct.unpack("<L", shmHandle.read(4))[0]
-    shmHandle.seek(96)    
+    shmHandle.seek(156)    
     distanceTraveled = struct.unpack("<f", shmHandle.read(4))[0]
     isInPit = struct.unpack("<L", shmHandle.read(4))[0]
     shmHandle.close()  

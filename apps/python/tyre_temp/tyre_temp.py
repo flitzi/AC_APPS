@@ -43,6 +43,9 @@
 # 1.2.6
 # - updated to AC 0.20 shared memory struct
 #
+# 1.2.7
+# - updated to AC 0.22 shared memory struct
+#
 ################################################################################
 
 import string
@@ -356,8 +359,8 @@ def readTyreWear():
   return struct.unpack("<ffff", data)
 
 def readIsInPit():
-  shmHandle = mmap.mmap(0, 169, "acpmf_graphics")
-  shmHandle.seek(100)
+  shmHandle = mmap.mmap(0, 262, "acpmf_graphics")
+  shmHandle.seek(160)
   isInPit = struct.unpack("<L", shmHandle.read(4))[0]
   shmHandle.close()  
   return isInPit
