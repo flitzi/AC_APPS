@@ -1,0 +1,4 @@
+server/AC_TrackCycle/obj/*
+*Thumbs.db
+server/AC_TrackCycle/Properties/Settings.settings
+*.suo
