@@ -34,6 +34,7 @@
             this.textBoxCurrentCycle = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.checkBoxAutoChangeTrack = new System.Windows.Forms.CheckBox();
+            this.checkBoxCreateLogs = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonStart
@@ -104,11 +105,24 @@
             this.checkBoxAutoChangeTrack.UseVisualStyleBackColor = true;
             this.checkBoxAutoChangeTrack.CheckedChanged += new System.EventHandler(this.checkBoxAutoChangeTrack_CheckedChanged);
             // 
+            // checkBoxCreateLogs
+            // 
+            this.checkBoxCreateLogs.AutoSize = true;
+            this.checkBoxCreateLogs.Checked = true;
+            this.checkBoxCreateLogs.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCreateLogs.Location = new System.Drawing.Point(395, 14);
+            this.checkBoxCreateLogs.Name = "checkBoxCreateLogs";
+            this.checkBoxCreateLogs.Size = new System.Drawing.Size(79, 17);
+            this.checkBoxCreateLogs.TabIndex = 6;
+            this.checkBoxCreateLogs.Text = "Create logs";
+            this.checkBoxCreateLogs.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(514, 615);
+            this.Controls.Add(this.checkBoxCreateLogs);
             this.Controls.Add(this.checkBoxAutoChangeTrack);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBoxCurrentCycle);
@@ -117,7 +131,7 @@
             this.Controls.Add(this.buttonStart);
             this.Name = "Form1";
             this.ShowIcon = false;
-            this.Text = "AC Track Cycle";
+            this.Text = "AC Track Cycle 1.1";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -131,6 +145,7 @@
         private System.Windows.Forms.TextBox textBoxCurrentCycle;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox checkBoxAutoChangeTrack;
+        private System.Windows.Forms.CheckBox checkBoxCreateLogs;
     }
 }
 

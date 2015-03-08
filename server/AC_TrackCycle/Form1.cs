@@ -14,17 +14,20 @@ namespace AC_TrackCycle
 {
     public partial class Form1 : Form
     {
-        private string serverfolder = @"D:\Games\Steam\SteamApps\common\assettocorsa\server\"; //not used if acServer.exe is found next to this app
-        private List<string> iniLines = new List<string>();
-        private List<Tuple<string, int>> tracks = new List<Tuple<string, int>>();
-        //private List<string> admins = new List<string>(); //not used, you have to pass the admin password everytime for /next_track and /change_track, e.g. "/next_track <mypassword>" or /change_track <mypassword> spa
-        private string next_track, change_track;
+        private readonly string serverfolder = @"D:\Games\Steam\SteamApps\common\assettocorsa\server\"; //not used if acServer.exe is found next to this app
+        private readonly List<string> iniLines = new List<string>();
+        private readonly List<Tuple<string, int>> tracks = new List<Tuple<string, int>>();
+        //private readonly List<string> admins = new List<string>(); //not used, you have to pass the admin password everytime for /next_track and /change_track, e.g. "/next_track <mypassword>" or /change_track <mypassword> spa
+        private readonly string next_track, change_track;
+
+        private string logFile = null;
+        private int logLength = 0;
 
         private int cycle;
-        Process serverInstance;
+        private Process serverInstance;
 
-        delegate void outputRecieved(string output);
-        delegate void clearOutput();
+        private delegate void outputRecieved(string output);
+        private delegate void clearOutput();
 
         private bool autoChangeTrack = true;
 
@@ -76,6 +79,12 @@ namespace AC_TrackCycle
             }
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            this.resetOutput();
+            base.OnClosing(e);
+        }
+
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
@@ -91,6 +100,16 @@ namespace AC_TrackCycle
             if (!string.IsNullOrEmpty(output) && !output.StartsWith("No car with address"))
             {
                 this.textBoxOutput.AppendText(output + Environment.NewLine);
+                logLength++;
+
+                if (logLength > 50000)
+                {
+                    this.textBoxOutput.AppendText("Flushing log" + Environment.NewLine);
+                    this.resetOutput();
+                    this.textBoxOutput.AppendText("Log flushed" + Environment.NewLine);
+                    logLength = 0;
+                }
+
                 if (this.cycle < this.tracks.Count)
                 {
                     this.textBoxCurrentCycle.Text = this.tracks[this.cycle].Item1 + " " + this.tracks[this.cycle].Item2 + " laps";
@@ -100,6 +119,13 @@ namespace AC_TrackCycle
 
         private void resetOutput()
         {
+            if (this.checkBoxCreateLogs.Checked && !string.IsNullOrEmpty(this.logFile))
+            {
+                StreamWriter sw = new StreamWriter(this.logFile, true);
+                sw.Write(textBoxOutput.Text);
+                sw.Close();
+                sw.Dispose();
+            }
             this.textBoxOutput.Text = string.Empty;
         }
 
@@ -154,6 +180,8 @@ namespace AC_TrackCycle
                 this.serverInstance.OutputDataReceived += process_OutputDataReceived;
                 this.serverInstance.Start();
                 this.serverInstance.BeginOutputReadLine();
+
+                this.logFile = Path.Combine(this.serverfolder, "log_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_" + this.tracks[cycle].Item1 + ".txt");
             }
             catch (Exception ex)
             {
@@ -173,7 +201,7 @@ namespace AC_TrackCycle
 
                 this.BeginInvoke(new outputRecieved(this.writeOuput), e.Data);
 
-                if (this.autoChangeTrack&& e.Data == "HasSentRaceoverPacket, move to the next session")
+                if (this.autoChangeTrack && e.Data == "HasSentRaceoverPacket, move to the next session")
                 {
                     this.cycle++;
                     this.StartServer();
