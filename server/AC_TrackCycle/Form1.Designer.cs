@@ -40,7 +40,7 @@
             // buttonStart
             // 
             this.buttonStart.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.buttonStart.Location = new System.Drawing.Point(218, 580);
+            this.buttonStart.Location = new System.Drawing.Point(218, 566);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(75, 23);
             this.buttonStart.TabIndex = 0;
@@ -59,14 +59,14 @@
             this.textBoxOutput.Name = "textBoxOutput";
             this.textBoxOutput.ReadOnly = true;
             this.textBoxOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxOutput.Size = new System.Drawing.Size(490, 536);
+            this.textBoxOutput.Size = new System.Drawing.Size(490, 522);
             this.textBoxOutput.TabIndex = 1;
             this.textBoxOutput.WordWrap = false;
             // 
             // buttonNextTrack
             // 
             this.buttonNextTrack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonNextTrack.Location = new System.Drawing.Point(427, 580);
+            this.buttonNextTrack.Location = new System.Drawing.Point(427, 566);
             this.buttonNextTrack.Name = "buttonNextTrack";
             this.buttonNextTrack.Size = new System.Drawing.Size(75, 23);
             this.buttonNextTrack.TabIndex = 2;
@@ -76,11 +76,10 @@
             // 
             // textBoxCurrentCycle
             // 
-            this.textBoxCurrentCycle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textBoxCurrentCycle.Location = new System.Drawing.Point(138, 12);
             this.textBoxCurrentCycle.Name = "textBoxCurrentCycle";
             this.textBoxCurrentCycle.ReadOnly = true;
-            this.textBoxCurrentCycle.Size = new System.Drawing.Size(135, 20);
+            this.textBoxCurrentCycle.Size = new System.Drawing.Size(190, 20);
             this.textBoxCurrentCycle.TabIndex = 3;
             // 
             // label1
@@ -94,10 +93,11 @@
             // 
             // checkBoxAutoChangeTrack
             // 
+            this.checkBoxAutoChangeTrack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxAutoChangeTrack.AutoSize = true;
             this.checkBoxAutoChangeTrack.Checked = true;
             this.checkBoxAutoChangeTrack.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAutoChangeTrack.Location = new System.Drawing.Point(12, 584);
+            this.checkBoxAutoChangeTrack.Location = new System.Drawing.Point(12, 570);
             this.checkBoxAutoChangeTrack.Name = "checkBoxAutoChangeTrack";
             this.checkBoxAutoChangeTrack.Size = new System.Drawing.Size(138, 17);
             this.checkBoxAutoChangeTrack.TabIndex = 5;
@@ -107,6 +107,7 @@
             // 
             // checkBoxCreateLogs
             // 
+            this.checkBoxCreateLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxCreateLogs.AutoSize = true;
             this.checkBoxCreateLogs.Checked = true;
             this.checkBoxCreateLogs.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -121,7 +122,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(514, 615);
+            this.ClientSize = new System.Drawing.Size(514, 601);
             this.Controls.Add(this.checkBoxCreateLogs);
             this.Controls.Add(this.checkBoxAutoChangeTrack);
             this.Controls.Add(this.label1);
@@ -129,9 +130,10 @@
             this.Controls.Add(this.buttonNextTrack);
             this.Controls.Add(this.textBoxOutput);
             this.Controls.Add(this.buttonStart);
+            this.MinimumSize = new System.Drawing.Size(480, 240);
             this.Name = "Form1";
             this.ShowIcon = false;
-            this.Text = "AC Track Cycle 1.1";
+            this.Text = "AC Track Cycle 1.2";
             this.ResumeLayout(false);
             this.PerformLayout();
 
