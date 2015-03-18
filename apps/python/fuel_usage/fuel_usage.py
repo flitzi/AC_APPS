@@ -32,6 +32,9 @@
 # 1.7
 # - updated to AC 0.22 shared memory struct
 #
+# 1.8
+# - compatibility with track configurations 
+#
 ################################################################################
 
 import string
@@ -79,7 +82,7 @@ class Fuel_Usage:
     self.counter = 0
     self.updatecounter = 0
     
-    self.inifilepath = inidir + self.getValidFileName(ac.getCarName(0)) +"_" + self.getValidFileName(ac.getTrackName(0)) + ".ini"
+    self.inifilepath = inidir + self.getValidFileName(ac.getCarName(0)) +"_" + self.getValidFileName(ac.getTrackName(0)) +"_" + self.getValidFileName(ac.getTrackConfiguration(0)) + ".ini"
     
     ##initialize labels
     
