@@ -82,7 +82,7 @@ class Fuel_Usage:
     self.counter = 0
     self.updatecounter = 0
     
-    self.inifilepath = inidir + self.getValidFileName(ac.getCarName(0)) +"_" + self.getValidFileName(ac.getTrackName(0)) +"_" + self.getValidFileName(ac.getTrackConfiguration(0)) + ".ini"
+    self.inifilepath = inidir + self.getValidFileName(ac.getCarName(0)) +"_" + self.getValidFileName(ac.getTrackName(0)) + self.getValidFileName(ac.getTrackConfiguration(0)) + ".ini"
     
     ##initialize labels
     
