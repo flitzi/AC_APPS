@@ -117,6 +117,7 @@
             this.checkBoxCreateLogs.TabIndex = 6;
             this.checkBoxCreateLogs.Text = "Create logs";
             this.checkBoxCreateLogs.UseVisualStyleBackColor = true;
+            this.checkBoxCreateLogs.CheckedChanged += new System.EventHandler(this.checkBoxCreateLogs_CheckedChanged);
             // 
             // Form1
             // 
