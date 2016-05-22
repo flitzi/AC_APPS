@@ -35,6 +35,9 @@
 # 1.8
 # - compatibility with track configurations 
 #
+# 1.9
+# - compatibility with AC 1.6 (thanks to B-RIDDICK)
+#
 ################################################################################
 
 import string
@@ -55,8 +58,9 @@ validFilenameChars = "-_() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0
 ###appsize
 x_app_size = 300
 y_app_size = 66
+
 ###startingpoint of first label
-x_start = 7
+x_start = 1
 y_start = 26
 
 ################## CHANGE FOR MILES PER GALLON HERE #######
@@ -95,10 +99,10 @@ class Fuel_Usage:
     ##set label positions
     
     ac.setPosition(self.remainingLabel, x, y)
-    ac.setPosition(self.averageFuelPerLapLabel, x + 93, y)
-    ac.setPosition(self.lapsLeftLabel, 100 - x, y)
-    ac.setPosition(self.averageFuelPer100kmLabel, x + 93, y + 19)
-    ac.setPosition(self.instFuelLabel, 100 - x, y + 19)
+    ac.setPosition(self.averageFuelPerLapLabel, x + 208, y)
+    ac.setPosition(self.lapsLeftLabel, 150 - x, y)
+    ac.setPosition(self.averageFuelPer100kmLabel, x + 208, y + 19)
+    ac.setPosition(self.instFuelLabel, 150 - x, y + 19)
     
     ##set label alignments
     
@@ -115,7 +119,7 @@ class Fuel_Usage:
     ac.setFontSize(self.lapsLeftLabel, 16)
     ac.setFontSize(self.averageFuelPer100kmLabel, 16)
     ac.setFontSize(self.instFuelLabel, 16)
-
+    
     if os.path.exists(self.inifilepath):
       f = open(self.inifilepath, "r")
       self.AverageFuelPerLap = float(f.readline()[6:])
